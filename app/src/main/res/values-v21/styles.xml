@@ -1,28 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="android:fontFamily">@font/poppins</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@android:color/background_light</item>
         <item name="android:textColorPrimaryInverse">@android:color/white</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:colorForeground">@color/colorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
-        <item name="android:textColorHint">@color/textColorSecondary</item>
-
-    </style>
-
-    <style name="TextInputLayoutWithPrimaryColor" parent="Widget.Design.TextInputLayout">
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:fontFamily">@font/poppins</item>
-    </style>
-
-    <style name="ErrorAppearance" parent="TextAppearance.Design.Error">
-        <item name="android:textColor">@color/colorAccent</item>
-        <item name="android:fontFamily">@font/poppins</item>
     </style>
 </resources>
