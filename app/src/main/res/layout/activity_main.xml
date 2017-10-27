@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="dgapmipt.druncatorg.MainActivity">
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        app:columnCount="2"
+        app:rowCount="2">
+
+        <Button
+            android:id="@+id/register"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:drawableTint="@color/colorPrimary"
+            android:drawableTop="@drawable/register"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/register"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/add"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:drawableTint="@color/colorPrimary"
+            android:drawableTop="@drawable/add"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/add"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/buy"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:drawableTint="@color/colorPrimary"
+            android:drawableTop="@drawable/buy"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/buy"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/balance"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:drawableTint="@color/colorPrimary"
+            android:drawableTop="@drawable/balance"
+            android:fontFamily="@font/poppins_medium"
+            android:text="@string/balance"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            tools:ignore="ContentDescription" />
+
+    </android.support.v7.widget.GridLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/grid"
+        android:layout_alignParentTop="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/hello_name"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        android:textColor="@color/colorPrimary" />
+</RelativeLayout>

@@ -10,4 +10,9 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="balance">Balance</string>
+    <string name="hello_name">Hello, @name</string>
+    <string name="buy">Buy</string>
+    <string name="add">Add</string>
+    <string name="register">Register</string>
 </resources>
