@@ -7,20 +7,30 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.View
-import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_login.*
+import org.json.JSONObject
+
+
 
 
 class LoginActivity : AppCompatActivity() {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private var mAuthTask: UserLoginTask? = null
+//    private var mAuthTask: UserLoginTask? = null
+    private lateinit var queue: RequestQueue
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_login)
+
         name.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 hideKeyboard(v)
@@ -65,9 +76,10 @@ class LoginActivity : AppCompatActivity() {
      * Errors are presented and no actual login attempt is made.
      */
     private fun attemptLogin() {
-        if (mAuthTask != null) {
-            return
-        }
+//        if (mAuthTask != null) {
+//            return
+//        }
+        queue = Volley.newRequestQueue(this)
 
         // Reset errors.
         nameWrapper.error = null
@@ -103,8 +115,10 @@ class LoginActivity : AppCompatActivity() {
             // perform the user login attempt.
             hideKeyboard(currentFocus)
             showProgress(true)
-            mAuthTask = UserLoginTask(nameStr, passwordStr)
-            mAuthTask!!.execute(null as Void?)
+            auth(passwordStr)
+//            mAuthTask = UserLoginTask(nameStr, passwordStr)
+//            mAuthTask!!.execute(null as Void?)
+
         }
     }
 
@@ -120,57 +134,96 @@ class LoginActivity : AppCompatActivity() {
         login_form.visibility = if (show) View.GONE else View.VISIBLE
     }
 
+    private fun auth(passw: String) {
+        try {
+//            val authUrl = "http://9bm.ru/session/auth/$passw/
+            val authUrl = "http://httpbin.org/get"
+
+            val jsObjRequest = JsonObjectRequest(Request.Method.GET, authUrl, null, Response.Listener<JSONObject> { response ->
+
+                val token = response.get("origin").toString()
+                Log.println(Log.INFO, "response", token)
+                finish()
+            }, Response.ErrorListener { error ->
+
+                Log.println(Log.INFO, "response", error.toString())
+                passwordWrapper.error = error.toString()
+                password.requestFocus()
+                showProgress(false)
+            })
+            queue.add(jsObjRequest)
+        } catch (e: InterruptedException) {
+            Log.println(Log.INFO, "response", "Connection interrupted.")
+            passwordWrapper.error = "Connection interrupted."
+            password.requestFocus()
+            showProgress(false)
+        }
+    }
+}
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    inner class UserLoginTask internal constructor(private val mEmail: String, private val mPassword: String) : AsyncTask<Void, Void, Boolean>() {
-
-        override fun doInBackground(vararg params: Void): Boolean? {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000)
-            } catch (e: InterruptedException) {
-                return false
-            }
-
-            return DUMMY_CREDENTIALS
-                    .map { it.split(":") }
-                    .firstOrNull { it[0] == mEmail }
-                    ?.let {
-                        // Account exists, return true if the password matches.
-                        it[1] == mPassword
-                    }
-                    ?: true
-        }
-
-        override fun onPostExecute(success: Boolean?) {
-            mAuthTask = null
-            showProgress(false)
-
-            if (success!!) {
-                finish()
-            } else {
-                password.error = getString(R.string.error_incorrect_password)
-                password.requestFocus()
-            }
-        }
-
-        override fun onCancelled() {
-            mAuthTask = null
-            showProgress(false)
-        }
-    }
-
-    companion object {
-
-        /**
-         * A dummy authentication store containing known user names and passwords.
-         * TODO: remove after connecting to a real authentication system.
-         */
-        private val DUMMY_CREDENTIALS = arrayOf("foo@example.com:hello", "bar@example.com:world")
-    }
-}
+//    inner class UserLoginTask internal constructor(private val mEmail: String, private val mPassword: String) : AsyncTask<Void, Void, Boolean>() {
+//
+//        override fun doInBackground(vararg params: Void): Boolean? {
+//            // TODO: attempt authentication against a network service.
+//            try {
+//                val authUrl = "http://httpbin.org/get"
+//
+//                val jsObjRequest = JsonObjectRequest(Request.Method.GET, authUrl, null, object : Response.Listener<JSONObject> {
+//
+//                    override fun onResponse(response: JSONObject) {
+//                        Log.println(Log.INFO, "response", response.toString())
+//                    }
+//                }, object : Response.ErrorListener {
+//
+//                    override fun onErrorResponse(error: VolleyError) {
+//                        // TODO Auto-generated method stub
+//                        Log.println(Log.INFO, "response", error.toString())
+//
+//                    }
+//                })
+//                Volley.newRequestQueue(this).add(jsObjRequest)
+//            } catch (e: InterruptedException) {
+//                return false
+//            }
+//
+//            return DUMMY_CREDENTIALS
+//                    .map { it.split(":") }
+//                    .firstOrNull { it[0] == mEmail }
+//                    ?.let {
+//                        // Account exists, return true if the password matches.
+//                        it[1] == mPassword
+//                    }
+//                    ?: true
+//        }
+//
+//        override fun onPostExecute(success: Boolean?) {
+//            mAuthTask = null
+//            showProgress(false)
+//
+//            if (success!!) {
+//                finish()
+//            } else {
+//                password.error = getString(R.string.error_incorrect_password)
+//                password.requestFocus()
+//            }
+//        }
+//
+//        override fun onCancelled() {
+//            mAuthTask = null
+//            showProgress(false)
+//        }
+//    }
+//
+//    companion object {
+//
+//        /**
+//         * A dummy authentication store containing known user names and passwords.
+//         * TODO: remove after connecting to a real authentication system.
+//         */
+//        private val DUMMY_CREDENTIALS = arrayOf("foo@example.com:hello", "bar@example.com:world")
+//    }
+//}
