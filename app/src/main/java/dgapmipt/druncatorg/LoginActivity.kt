@@ -1,8 +1,9 @@
 package dgapmipt.druncatorg
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
-import android.os.AsyncTask
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
@@ -24,13 +25,10 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.json.JSONObject
 
 
-
-
 class LoginActivity : AppCompatActivity() {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-
     private lateinit var queue: RequestQueue
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +37,8 @@ class LoginActivity : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_login)
+
+//TODO:        checkNFC()
 
         name.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
@@ -70,12 +70,6 @@ class LoginActivity : AppCompatActivity() {
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     *
-     * Errors are presented and no actual login attempt is made.
-     */
     private fun attemptLogin() {
         queue = Volley.newRequestQueue(this)
 
@@ -90,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
         var cancel = false
         var focusView: View? = null
 
-        // Check for a valid password, if the user entered one.
+        // Check for a valid password, if the User entered one.
         if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr)) {
             passwordWrapper.error = getString(R.string.error_invalid_password)
             focusView = password
@@ -110,14 +104,14 @@ class LoginActivity : AppCompatActivity() {
             focusView?.requestFocus()
         } else {
             // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+            // perform the User login attempt.
             if (currentFocus != null)
                 hideKeyboard(currentFocus)
             else {
                 hideKeyboard(name)
             }
             showProgress(true)
-            auth(passwordStr)
+            auth(nameStr, passwordStr)
         }
     }
 
@@ -125,29 +119,47 @@ class LoginActivity : AppCompatActivity() {
         return password.length > 3
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
+    private fun checkNFC() {
+        var nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        if (nfcAdapter == null) {
+            val dialog = SimpleDialogBuilder(this, R.string.dialogNFCTitle, R.string.dialogNoNFC,
+                    DialogInterface.OnClickListener { dialog, which -> finish() }).create()
+            dialog.show()
+        } else if (!nfcAdapter.isEnabled()) {
+            val dialog = SimpleDialogBuilder(this, R.string.dialogNFCTitle, R.string.dialogNFCNotEnabled,
+                    DialogInterface.OnClickListener { dialog, which -> finish() }).create()
+            dialog.show()
+        }
+    }
+
     private fun showProgress(show: Boolean) {
         login_progress.visibility = if (show) View.VISIBLE else View.GONE
         login_form.visibility = if (show) View.GONE else View.VISIBLE
     }
 
-    private fun auth(passw: String) {
+    private fun auth(name: String, passw: String) {
         try {
-//            val authUrl = "http://9bm.ru/session/auth/$passw/
-            val authUrl = "http://httpbin.org/get"
+            val authUrl = "http://9bm.ru/session/auth/$passw/"
 
             val jsObjRequest = JsonObjectRequest(Request.Method.GET, authUrl, null,
                     Response.Listener<JSONObject> { response ->
-
-                        val token = response.get("origin").toString()
-                        Log.println(Log.INFO, "response", token)
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-            }, Response.ErrorListener { error ->
-
-                    Log.println(Log.INFO, "response", error.toString())
+//                        Log.println(Log.INFO, "response", response.toString())
+                        if (response.get("success").toString() == "1") {
+                            val token = response.get("token").toString()
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.putExtra("token", token)
+                            intent.putExtra("name", name)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            var error = response.get("error").toString()
+                            if (error == "Bad pin") error = getString(R.string.error_incorrect_password)
+                            showProgress(false)
+                            passwordWrapper.error = error
+                            password.requestFocus()
+                        }
+            }, Response.ErrorListener { error: VolleyError ->
+//                    Log.println(Log.INFO, "response", error.toString())
                     passwordWrapper.error = error.toString()
                     password.requestFocus()
                     showProgress(false)
