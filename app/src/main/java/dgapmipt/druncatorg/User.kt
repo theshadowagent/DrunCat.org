@@ -11,17 +11,17 @@ import kotlinx.android.parcel.Parcelize
 
 open class User(
         val token: String = "",
-        val id: Int,
         val cardId: String,
         val coefficent: Float = 1.0F,
         val name: String,
-        val surname: String = ""
+        val surname: String = "",
+        val group: String
 ) : Parcelable {
     constructor(source: Parcel) : this(
             source.readString(),
-            source.readInt(),
             source.readString(),
             source.readFloat(),
+            source.readString(),
             source.readString(),
             source.readString()
     )
@@ -30,11 +30,11 @@ open class User(
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(token)
-        writeInt(id)
         writeString(cardId)
         writeFloat(coefficent)
         writeString(name)
         writeString(surname)
+        writeString(group)
     }
 
     companion object {

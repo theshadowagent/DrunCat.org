@@ -31,11 +31,9 @@ public class RegisterActivity extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
+    private User admin;
     private ViewPager mViewPager;
     private NfcAdapter nfcAdapter;
-
-    private int regFragmentID;
-    private int scanFragmentID;
 
     private Scanner scanner;
 
@@ -46,16 +44,18 @@ public class RegisterActivity extends AppCompatActivity {
 
         scanner = new Scanner();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        Intent intent = getIntent();
+        admin = (User) intent.getParcelableExtra("admin");
     }
 
     @Override
@@ -107,7 +107,6 @@ public class RegisterActivity extends AppCompatActivity {
             scanner.saveScanResult(id);
         } else if (scanResult != null) {
             scanner.saveScanResult(scanResult);
-//            mDataListener.onDataReceived(scanResult);
         }
     }
 
@@ -137,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             if (position == 1) {
-                return RegisterFragment.newInstance(scanner);
+                return RegisterFragment.newInstance(scanner, admin.getToken());
             } else {
                 return ScanFragment.newInstance(scanner);
             }

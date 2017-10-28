@@ -16,7 +16,6 @@ import android.widget.TextView;
 public class ScanFragment extends Fragment implements Scanner.OnDataReceivedListener {
 
     private TextView nfcTagView;
-    private RegisterActivity mActivity;
 
     private Scanner scanner;
 
@@ -38,7 +37,6 @@ public class ScanFragment extends Fragment implements Scanner.OnDataReceivedList
         if (scanner == null) {
             scanner = new Scanner();
         }
-        scanner.setDataListener(this);
     }
 
     @Override
@@ -46,17 +44,17 @@ public class ScanFragment extends Fragment implements Scanner.OnDataReceivedList
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
         nfcTagView = rootView.findViewById(R.id.scannedTagText);
-        if (scanner.getScanResult() != null)
-                seeNFCtag(scanner.getScanResult());
+//        if (scanner.getScanResult() != null)
+//                seeNFCtag(scanner.getScanResult());
         return rootView;
     }
 
     @Override
     public void onDataReceived(String str) {
-        seeNFCtag(str);
+
     }
 
-    private void seeNFCtag(String tag) {
-        nfcTagView.setText(tag);
-    }
+//    private void seeNFCtag(String tag) {
+//        nfcTagView.setText(tag);
+//    }
 }

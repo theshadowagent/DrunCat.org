@@ -38,6 +38,6 @@ class MainActivity : AppCompatActivity() {
 
         heading.text = String.format(getString(R.string.hello_name), name)
 
-        admin = User(token = token, id = 0, cardId = "", name = name, surname = surname)
+        admin = User(token = token, cardId = "", name = name, surname = surname, group = "")
     }
 }
