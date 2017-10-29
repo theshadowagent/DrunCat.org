@@ -9,9 +9,11 @@
     <string name="success">Success!</string>
     <string name="prompt_coeff">Coefficent (0-1)</string>
     <string name="register_title">Add a DrunCat</string>
-    <string name="card_scan_prompt">First scan a card.</string>
+    <string name="topup_title">Pour some ƛ litres</string>
+    <string name="custom_sum_prompt">Or any other amount</string>
+    <string name="card_scan_prompt">First, scan your ID card.</string>
+    <string name="card_scanned_prompt">Card scanned.</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="action_sign_in_short">Sign in</string>
     <string name="error_empty_name">Name can\'t be empty</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>

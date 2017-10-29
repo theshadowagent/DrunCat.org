@@ -3,8 +3,10 @@ package dgapmipt.druncatorg
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
@@ -31,38 +33,53 @@ class LoginActivity : AppCompatActivity() {
      */
     private lateinit var queue: RequestQueue
 
+    private var sharedPreferences: SharedPreferences? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Disable navigation bar.
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_login)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val token = sharedPreferences!!.getString("token", "0")
+        val nameStr = sharedPreferences!!.getString("name", "")
+        val surname = sharedPreferences!!.getString("surname", "")
 
-//TODO:        checkNFC()
+        var admin = User(token = token, cardId = "", name = nameStr, surname = surname, group = "")
+        if (token != "0") {
+            intent = Intent(this, MainActivity::class.java);
+            intent.putExtra("admin", admin)
+            startActivity(intent);
+            finish();
+        } else {
 
-        name.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                hideKeyboard(v)
+            //TODO:        checkNFC()
+
+            name.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) {
+                    hideKeyboard(v)
+                }
             }
+            password.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) {
+                    hideKeyboard(v)
+                }
+            }
+            val typeFace = ResourcesCompat.getFont(this, R.font.poppins)
+            password.typeface = typeFace
+            password.transformationMethod = PasswordTransformationMethod()
+            // Set up the login form.
+            password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
+                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                    attemptLogin()
+                    return@OnEditorActionListener true
+                }
+                false
+            })
+
+            sign_in_button.setOnClickListener { attemptLogin() }
         }
-        password.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                hideKeyboard(v)
-            }
-        }
-        val typeFace = ResourcesCompat.getFont(this, R.font.poppins)
-        password.typeface = typeFace
-        password.transformationMethod = PasswordTransformationMethod()
-        // Set up the login form.
-        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
-            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptLogin()
-                return@OnEditorActionListener true
-            }
-            false
-        })
-
-        sign_in_button.setOnClickListener { attemptLogin() }
     }
 
     private fun hideKeyboard(view: View) {
@@ -143,7 +160,6 @@ class LoginActivity : AppCompatActivity() {
 
             val jsObjRequest = JsonObjectRequest(Request.Method.GET, authUrl, null,
                     Response.Listener<JSONObject> { response ->
-//                        Log.println(Log.INFO, "response", response.toString())
                         if (response.get("success").toString() == "1") {
                             val token = response.get("token").toString()
                             val intent = Intent(this, MainActivity::class.java)
@@ -159,7 +175,6 @@ class LoginActivity : AppCompatActivity() {
                             password.requestFocus()
                         }
             }, Response.ErrorListener { error: VolleyError ->
-//                    Log.println(Log.INFO, "response", error.toString())
                     passwordWrapper.error = error.toString()
                     password.requestFocus()
                     showProgress(false)

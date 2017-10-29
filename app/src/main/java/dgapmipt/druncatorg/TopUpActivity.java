@@ -11,21 +11,13 @@ import android.nfc.Tag;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -41,77 +33,49 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterActivity extends AppCompatActivity {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-//    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
+public class TopUpActivity extends AppCompatActivity {
+    Button add10;
+    Button add20;
+    Button add50;
+    Button add100;
     private User admin;
-    private ViewPager mViewPager;
-    private NfcAdapter nfcAdapter;
-
-    private String scannedStr;
-    private RequestQueue mRequestQueue;
+    private Button addButton;
     private ProgressBar loginProgress;
     private ScrollView loginForm;
-    private Button regButton;
-    private EditText fullNameView;
-    private EditText groupView;
+    private RequestQueue mRequestQueue;
+    private NfcAdapter nfcAdapter;
+    private String scannedStr;
     private TextView errorView;
-    private SeekBar coeffProgressBar;
-
+    private EditText customSumView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
-
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_top_up);
 
         Intent intent = getIntent();
         admin = intent.getParcelableExtra("admin");
 
         loginProgress = findViewById(R.id.login_progress);
         loginForm = findViewById(R.id.login_form);
-        regButton = findViewById(R.id.register_button);
-        fullNameView = findViewById(R.id.fullName);
-        groupView = findViewById(R.id.group);
         errorView = findViewById(R.id.error_prompt);
-        coeffProgressBar = findViewById(R.id.coeffBar);
-        regButton.setOnClickListener(new View.OnClickListener() {
+        customSumView = findViewById(R.id.customSum);
+        addButton = findViewById(R.id.add_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 showProgress(true);
-                String fullName = fullNameView.getText().toString();
-                String[] split_name = fullName.split(" ");
-                String name = split_name[0];
-                String surname;
-                if (split_name.length > 1) {
-                    surname = split_name[1];
-                } else {
-                    surname = "N/A";
-                }
+
                 if (scannedStr != null) {
                     try {
                         if (admin == null) {
                             showProgress(false);
                             errorView.setText("Exception: Admin is null");
                         }
-                        User user = new User(admin.getToken(), scannedStr, (coeffProgressBar.getProgress() / (float) 10),
-                                name, surname, groupView.getText().toString());
-                        register(user);
+                        User user = new User(admin.getToken(), scannedStr, 0,
+                                "", "", "");
+                        topUp(user, customSumView.getText().toString());
                     } catch (Exception e) {
                         errorView.setText(String.format("%s%s", errorView.getText(), e.getMessage()));
                     }
@@ -121,18 +85,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
         if (scannedStr != null)
-            regButton.setEnabled(true);
+            addButton.setEnabled(true);
 
-        fullNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        groupView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        customSumView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -188,11 +143,11 @@ public class RegisterActivity extends AppCompatActivity {
             loginForm.setVisibility(View.VISIBLE);
         }
     }
-    
-    private void register(final User user) {
+
+    private void topUp(final User user, final String sum) {
         mRequestQueue = Volley.newRequestQueue(this);
 
-        String url = "http://9bm.ru/user/add/";
+        String url = "http://9bm.ru/money/add/";
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
@@ -231,11 +186,7 @@ public class RegisterActivity extends AppCompatActivity {
                 Map<String, String>  params = new HashMap<>();
                 params.put("token", user.getToken());
                 params.put("rfid", user.getCardId());
-                params.put("group", user.getGroup());
-                params.put("name", user.getName());
-                params.put("surname", user.getSurname());
-                params.put("coefficient", String.valueOf(user.getCoefficent()));
-
+                params.put("summ", String.valueOf(sum));
                 return params;
             }
         };
@@ -280,11 +231,11 @@ public class RegisterActivity extends AppCompatActivity {
             v.vibrate(500);
             final String id = bytesToHexString(tag.getId());
             scannedStr = id;
-            regButton.setEnabled(true);
+            addButton.setEnabled(true);
 
         } else if (scanResult != null) {
             scannedStr = scanResult;
-            regButton.setEnabled(true);
+            addButton.setEnabled(true);
         }
     }
 
@@ -304,25 +255,5 @@ public class RegisterActivity extends AppCompatActivity {
 
         return stringBuilder.toString();
     }
-
-//    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-//
-//        public SectionsPagerAdapter(FragmentManager fm) {
-//            super(fm);
-//        }
-//
-//        @Override
-//        public Fragment getItem(int position) {
-//            if (position == 1) {
-//                return RegisterFragment.newInstance(scanner, admin.getToken());
-//            } else {
-//                return ScanFragment.newInstance(scanner);
-//            }
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            return 2;
-//        }
-//    }
+    }
 }
