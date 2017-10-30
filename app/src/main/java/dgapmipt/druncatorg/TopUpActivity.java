@@ -255,5 +255,4 @@ public class TopUpActivity extends AppCompatActivity {
 
         return stringBuilder.toString();
     }
-    }
 }

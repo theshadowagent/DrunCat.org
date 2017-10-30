@@ -22,6 +22,12 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("admin", admin)
             startActivity(intent)
         }
+
+        add.setOnClickListener{
+            val intent = Intent(this, TopUpActivity::class.java)
+            intent.putExtra("admin", admin)
+            startActivity(intent)
+        }
     }
 
     private fun setAdmin() {

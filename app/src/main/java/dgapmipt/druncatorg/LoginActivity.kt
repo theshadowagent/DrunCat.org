@@ -41,18 +41,18 @@ class LoginActivity : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_login)
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val token = sharedPreferences!!.getString("token", "0")
-        val nameStr = sharedPreferences!!.getString("name", "")
-        val surname = sharedPreferences!!.getString("surname", "")
-
-        var admin = User(token = token, cardId = "", name = nameStr, surname = surname, group = "")
-        if (token != "0") {
-            intent = Intent(this, MainActivity::class.java);
-            intent.putExtra("admin", admin)
-            startActivity(intent);
-            finish();
-        } else {
+//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+//        val token = sharedPreferences!!.getString("token", "0")
+//        val nameStr = sharedPreferences!!.getString("name", "")
+//        val surname = sharedPreferences!!.getString("surname", "")
+//
+//        var admin = User(token = token, cardId = "", name = nameStr, surname = surname, group = "")
+//        if (token != "0") {
+//            intent = Intent(this, MainActivity::class.java);
+//            intent.putExtra("admin", admin)
+//            startActivity(intent);
+//            finish();
+//        } else {
 
             //TODO:        checkNFC()
 
@@ -80,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
 
             sign_in_button.setOnClickListener { attemptLogin() }
         }
-    }
+//    }
 
     private fun hideKeyboard(view: View) {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
