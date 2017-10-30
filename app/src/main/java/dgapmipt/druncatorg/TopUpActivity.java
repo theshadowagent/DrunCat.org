@@ -60,6 +60,104 @@ public class TopUpActivity extends AppCompatActivity {
         loginForm = findViewById(R.id.login_form);
         errorView = findViewById(R.id.error_prompt);
         customSumView = findViewById(R.id.customSum);
+        add10 = findViewById(R.id.add10);
+        add20 = findViewById(R.id.add20);
+        add50 = findViewById(R.id.add50);
+        add100 = findViewById(R.id.add100);
+        add10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgress(true);
+
+                if (scannedStr != null) {
+                    try {
+                        if (admin == null) {
+                            showProgress(false);
+                            errorView.setText("Exception: Admin is null");
+                        }
+                        User user = new User(admin.getToken(), scannedStr, 0,
+                                "", "", "");
+                        topUp(user, "10");
+                    } catch (Exception e) {
+                        errorView.setText(String.format("%s%s", errorView.getText(), e.getMessage()));
+                    }
+                } else {
+                    errorView.setText("Exception: scannedTag is null");
+                }
+            }
+        });
+
+        add20.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgress(true);
+
+                if (scannedStr != null) {
+                    try {
+                        if (admin == null) {
+                            showProgress(false);
+                            errorView.setText("Exception: Admin is null");
+                        }
+                        User user = new User(admin.getToken(), scannedStr, 0,
+                                "", "", "");
+                        topUp(user, "20");
+                    } catch (Exception e) {
+                        errorView.setText(String.format("%s%s", errorView.getText(), e.getMessage()));
+                    }
+                } else {
+                    errorView.setText("Exception: scannedTag is null");
+                }
+            }
+        });
+
+
+        add50.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgress(true);
+
+                if (scannedStr != null) {
+                    try {
+                        if (admin == null) {
+                            showProgress(false);
+                            errorView.setText("Exception: Admin is null");
+                        }
+                        User user = new User(admin.getToken(), scannedStr, 0,
+                                "", "", "");
+                        topUp(user, "50");
+                    } catch (Exception e) {
+                        errorView.setText(String.format("%s%s", errorView.getText(), e.getMessage()));
+                    }
+                } else {
+                    errorView.setText("Exception: scannedTag is null");
+                }
+            }
+        });
+
+
+        add100.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgress(true);
+
+                if (scannedStr != null) {
+                    try {
+                        if (admin == null) {
+                            showProgress(false);
+                            errorView.setText("Exception: Admin is null");
+                        }
+                        User user = new User(admin.getToken(), scannedStr, 0,
+                                "", "", "");
+                        topUp(user, "100");
+                    } catch (Exception e) {
+                        errorView.setText(String.format("%s%s", errorView.getText(), e.getMessage()));
+                    }
+                } else {
+                    errorView.setText("Exception: scannedTag is null");
+                }
+            }
+        });
+
         addButton = findViewById(R.id.add_button);
         addButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
@@ -157,7 +255,6 @@ public class TopUpActivity extends AppCompatActivity {
                         try {
                             JSONObject response = new JSONObject(raw_response);
                             if ((response.get("success").toString()).equals("1")) {
-                                int userID = Integer.parseInt(response.get("user_id").toString());
                                 showProgress(false);
                                 finish();
                             } else {
@@ -169,7 +266,6 @@ public class TopUpActivity extends AppCompatActivity {
                             showProgress(false);
                             String error = e.getMessage();
                             errorView.setText(error);
-
                         }
                     }
                 }, new Response.ErrorListener() {
